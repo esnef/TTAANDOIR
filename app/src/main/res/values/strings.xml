@@ -39,4 +39,8 @@
     <string name="title_activity_screen_test">ScreenTest</string>
 
     <string name="SEND">SEND</string>
+
+    <string name="OK">OK</string>
+    <string name="FAIL">FAIL</string>
+
 </resources>

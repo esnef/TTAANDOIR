@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/TTA.iml" filepath="$PROJECT_DIR$/TTA.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TTAANDOIR.iml" filepath="$PROJECT_DIR$/TTAANDOIR.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
