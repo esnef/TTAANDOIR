@@ -6,6 +6,9 @@ import java.util.ArrayList;
  * Created by alumno on 15/12/15.
  */
 public class Data {
+
+
+
     public ArrayList<Test> tests=null;
 
     public Data(ArrayList<Test> tests){
