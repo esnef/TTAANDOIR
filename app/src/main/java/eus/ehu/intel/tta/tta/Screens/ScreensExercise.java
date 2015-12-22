@@ -1,10 +1,16 @@
 package eus.ehu.intel.tta.tta.Screens;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import java.io.File;
 
 import eus.ehu.intel.tta.tta.R;
 
@@ -34,6 +40,14 @@ public class ScreensExercise extends ScreensBase implements View.OnClickListener
             case R.id.screen_exercise_button_up_image:
                 break;
             case R.id.screen_exercise_button_making_photo:
+                if(!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+                    Toast.makeText(this, R.string.no_camera,Toast.LENGTH_LONG).show();
+                    Intent intent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    if(intent.resolveActivity(getPackageManager())!=null){
+                        File dir= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                        //
+                    }
+                }
                 break;
             case R.id.screen_exercise_button_audio_recording:
                 break;

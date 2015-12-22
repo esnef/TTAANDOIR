@@ -43,4 +43,6 @@
     <string name="OK">OK</string>
     <string name="FAIL">FAIL</string>
 
+    <string name="no_camera">no camera</string>
+
 </resources>
