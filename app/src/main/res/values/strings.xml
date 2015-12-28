@@ -44,5 +44,10 @@
     <string name="FAIL">FAIL</string>
 
     <string name="no_camera">no camera</string>
+    <string name="no_app_camera">no app camera</string>
+    <string name="no_microphone">no microphone</string>
+    <string name="no_app_microphone">no app microphone</string>
+
+
 
 </resources>

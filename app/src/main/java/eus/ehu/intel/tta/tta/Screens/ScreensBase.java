@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import eus.ehu.intel.tta.tta.DataType.Data;
+import eus.ehu.intel.tta.tta.Engine;
 import eus.ehu.intel.tta.tta.R;
 
 public class ScreensBase extends AppCompatActivity {
@@ -18,6 +19,7 @@ public class ScreensBase extends AppCompatActivity {
     protected String passNow=null;
     protected Data dataNow=null;
     protected Context contextNow;
+    protected Engine mEngine;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +27,12 @@ public class ScreensBase extends AppCompatActivity {
         contextNow=this;
         if(dataNow==null){
             dataNow=new Data();
+        }
+        if(mEngine==null){
+            mEngine=Engine.getInstance();
+            if(!mEngine.isStart()){
+                mEngine.start(getApplicationContext());
+            }
         }
     }
 

@@ -2,6 +2,7 @@ package eus.ehu.intel.tta.tta.Screens;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -19,12 +20,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import eus.ehu.intel.tta.tta.AudioPlayer;
 import eus.ehu.intel.tta.tta.DataType.Test;
 import eus.ehu.intel.tta.tta.R;
 
-public class ScreenTest extends ScreensBase{
+public class ScreenTest extends ScreensBase implements Runnable{
     private final static String TAG = ScreenTest.class.getCanonicalName();
 
     private Button screen_menu_button_tracing;
@@ -33,6 +36,9 @@ public class ScreenTest extends ScreensBase{
     private LinearLayout screen_test_LinearLayout;
     private int positionSelect=-1;
     private ArrayList<RadioButton> radioButtons;
+
+
+    private AudioPlayer audioPlayer=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +54,11 @@ public class ScreenTest extends ScreensBase{
         items.add("prueba4");
 
         //Test test=new Test(items,items.get(0),"PREGUNTA","<html><body><h1>gfigisagigdspfgagai</h1></body></html>",Test.HTML_HELP);
-        // test=new Test(items,items.get(0),"PREGUNTA","http://google.es",Test.URL_HELP);
-        Test test=new Test(items,items.get(0),"PREGUNTA","http://techslides.com/demos/sample-videos/small.mp4",Test.VIDEO_HELP);
+        //Test test=new Test(items,items.get(0),"PREGUNTA","http://www.google.es",Test.URL_HELP);
+        //Test test=new Test(items,items.get(0),"PREGUNTA","http://techslides.com/demos/sample-videos/small.mp4",Test.VIDEO_HELP);
+        Test test=new Test(items,items.get(0),"PREGUNTA","http://soundjax.com/reddo/80656%5EHORSES.mp3",Test.AUDIO_HELP);
+
+
         dataNow.addTests(test);
 
 
@@ -143,7 +152,12 @@ public class ScreenTest extends ScreensBase{
                 startActivity(intent);
                 break;
             case Test.AUDIO_HELP:
-
+                uri= Uri.parse(help);
+                audioPlayer=new AudioPlayer(screen_test_LinearLayout,this);
+                try {
+                    audioPlayer.setAudioUri(uri);
+                } catch (IOException e) {
+                }
                 break;
             case Test.VIDEO_HELP:
                 uri= Uri.parse(help);
@@ -152,10 +166,6 @@ public class ScreenTest extends ScreensBase{
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
                 );
-                videoView.setLayoutParams(params);
-                //Indicamos la URL del video
-                videoView.setVideoURI(uri);
-
 
                 MediaController controller=new MediaController(this){
                     @Override
@@ -165,18 +175,24 @@ public class ScreenTest extends ScreensBase{
 
                     @Override
                     public boolean dispatchKeyEvent(KeyEvent event){
-                        if(event.getKeyCode()==KeyEvent.KEYCODE_BACK) try {
-                            finalize();
-                        } catch (Throwable throwable) {
-                            Log.e(TAG,"Error al finalizar la actividad");
+                        if(event.getKeyCode()==KeyEvent.KEYCODE_BACK){
+                            try {
+                                finalize();
+                            } catch (Throwable throwable) {
+                            }
                         }
 
                         return super.dispatchKeyEvent(event);
                     }
                 };
+                videoView.setMediaController(controller);
+                videoView.setLayoutParams(params);
+                //Indicamos la URL del video
+                videoView.setVideoURI(uri);
+
 
                 controller.setAnchorView(videoView);
-                videoView.setMediaController(controller);
+
                 screen_test_LinearLayout.addView(videoView);
                 videoView.start();
                 break;
@@ -187,4 +203,9 @@ public class ScreenTest extends ScreensBase{
     }
 
 
+    @Override
+    public void run() {
+        //Ejecutar al final de la ejecución de la musica.
+
+    }
 }
