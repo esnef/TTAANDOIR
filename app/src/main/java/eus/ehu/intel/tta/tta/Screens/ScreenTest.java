@@ -20,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -57,7 +59,8 @@ public class ScreenTest extends ScreensBase implements Runnable{
         //Test test=new Test(items,items.get(0),"PREGUNTA","http://www.google.es",Test.URL_HELP);
         //Test test=new Test(items,items.get(0),"PREGUNTA","http://techslides.com/demos/sample-videos/small.mp4",Test.VIDEO_HELP);
         Test test=new Test(items,items.get(0),"PREGUNTA","http://soundjax.com/reddo/80656%5EHORSES.mp3",Test.AUDIO_HELP);
-
+        //Gson gson=new Gson();
+        //Toast.makeText(this, gson.toJson(test),Toast.LENGTH_LONG).show();
 
         dataNow.addTests(test);
 

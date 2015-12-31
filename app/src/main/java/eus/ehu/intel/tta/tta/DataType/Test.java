@@ -1,12 +1,13 @@
 package eus.ehu.intel.tta.tta.DataType;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by alumno on 15/12/15.
  */
 
-public class Test {
+public class Test implements Serializable {
     public  final static int HTML_HELP=1;
     public final static int URL_HELP=2;
     public  final static int VIDEO_HELP=3;

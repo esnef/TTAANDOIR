@@ -1,11 +1,12 @@
 package eus.ehu.intel.tta.tta.DataType;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by alumno on 15/12/15.
  */
-public class Data {
+public class Data implements Serializable {
 
 
 
