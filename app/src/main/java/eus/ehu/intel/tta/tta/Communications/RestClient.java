@@ -1,5 +1,8 @@
 package eus.ehu.intel.tta.tta.Communications;
 
+import android.renderscript.ScriptGroup;
+import android.util.Base64;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -19,11 +22,20 @@ public class RestClient {
 
     private final Map<String,String> properties=new HashMap<>();
 
-    private String pathServer=null;
+
+
+    private final static String AUTH="Authorization";
+
+
+    private String pathServer="http://u017633.ehu.eus:18080/AlumnoTta/rest/tta";
     private String pathApplication=null;
+
 
     public RestClient(String pathServer,String pathApplication){
         this.pathServer=pathServer;
+        this.pathApplication=pathApplication;
+    }
+    public RestClient(String pathApplication){
         this.pathApplication=pathApplication;
     }
     public RestClient(){
@@ -40,19 +52,51 @@ public class RestClient {
         return conn;
     }
 
+    public int setHttpBasicAuth(String user, String passwd){
+        if(user == null || passwd==null || user.trim().equals(new String("")) )return -1;
+        String basicAuth= Base64.encodeToString(String.format("%s:%s",user.trim(),passwd.trim()).getBytes(),Base64.DEFAULT);
+        properties.put(AUTH, String.format("Basic %s", basicAuth));
+        return 1;
+    }
+
+    public static String getAUTH() {
+        return AUTH;
+    }
+
+    public String getAuthorization(){
+        return properties.get(AUTH);
+    }
+    public int setAuthorization(String auth){
+        if(auth==null)return -1;
+        properties.put(AUTH,auth);
+        return 1;
+    }
+
     public String getString(String path) throws IOException {
         if(path==null || path.equals("")){
             throw new RestException("Except that you do not have parameters");
         }
         HttpURLConnection conn=null;
+        InputStream inputStream=null;
         try{
             conn=getConnection(path);
-            BufferedReader br=new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            if(conn==null)throw new RestException("Except:HttpURLConnection is null");
+            inputStream=conn.getInputStream();
+            if(inputStream==null)throw new RestException("Except:InputStream is null");
+
+            InputStreamReader inputStreamReader=new InputStreamReader(inputStream);
+            if(inputStreamReader==null) throw new RestException("Except:InputStreamReader is null");
+
+            BufferedReader br=new BufferedReader(inputStreamReader);
+            if(br==null)throw new RestException("Except:BufferedReader is null ");
+
                 return br.readLine();
 
         }finally {
             if(conn!=null){
                 conn.disconnect();
+                if(inputStream!=null)
+                    inputStream.close();
             }
         }
 
@@ -118,4 +162,6 @@ public class RestClient {
         public RestException(String message, Throwable cause) { super(message, cause); }
         public RestException(Throwable cause) { super(cause); }
     }
+
+
 }

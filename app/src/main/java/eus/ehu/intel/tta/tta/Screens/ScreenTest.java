@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -26,6 +27,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import eus.ehu.intel.tta.tta.AudioPlayer;
+import eus.ehu.intel.tta.tta.Communications.RestClient;
+import eus.ehu.intel.tta.tta.Communications.RestClientTest;
+import eus.ehu.intel.tta.tta.DataType.Choice;
 import eus.ehu.intel.tta.tta.DataType.Test;
 import eus.ehu.intel.tta.tta.R;
 
@@ -58,11 +62,11 @@ public class ScreenTest extends ScreensBase implements Runnable{
         //Test test=new Test(items,items.get(0),"PREGUNTA","<html><body><h1>gfigisagigdspfgagai</h1></body></html>",Test.HTML_HELP);
         //Test test=new Test(items,items.get(0),"PREGUNTA","http://www.google.es",Test.URL_HELP);
         //Test test=new Test(items,items.get(0),"PREGUNTA","http://techslides.com/demos/sample-videos/small.mp4",Test.VIDEO_HELP);
-        Test test=new Test(items,items.get(0),"PREGUNTA","http://soundjax.com/reddo/80656%5EHORSES.mp3",Test.AUDIO_HELP);
+        //Test test=new Test(items,items.get(0),"PREGUNTA","http://soundjax.com/reddo/80656%5EHORSES.mp3",Test.AUDIO_HELP);
         //Gson gson=new Gson();
         //Toast.makeText(this, gson.toJson(test),Toast.LENGTH_LONG).show();
 
-        dataNow.addTests(test);
+        //dataNow.addTests(test);
 
 
         screen_test_TextView_question=(TextView)findViewById(R.id.screen_test_TextView_question);
@@ -72,33 +76,23 @@ public class ScreenTest extends ScreensBase implements Runnable{
 
 
 
-        screen_test_TextView_question.setText(dataNow.getTests().get(0).getQuestion());
-        radioButtons=new ArrayList<RadioButton>();
-        if(dataNow!=null && dataNow.getTests().get(0).getItems()!=null){
 
-            for(int con=0;con<dataNow.getTests().get(0).getItems().size();con++){
-                RadioButton radioButton=new RadioButton(this);
-                radioButton.setText(dataNow.getTests().get(0).getItems().get(con));
-                radioButtons.add(radioButton);
-                screen_test_RadioGroup_items.addView(radioButton);
-            }
-        }
 
         screen_test_RadioGroup_items.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 Log.d(TAG, "id" + checkedId);
-                RadioButton radio=(RadioButton)findViewById(checkedId);
-                int index=screen_test_RadioGroup_items.indexOfChild(radio);
-                if(index==dataNow.getTests().get(0).getSolutionPosition()){
+                RadioButton radio = (RadioButton) findViewById(checkedId);
+                int index = screen_test_RadioGroup_items.indexOfChild(radio);
+                if (index == dataNow.getTests().get(0).getSolutionPosition()) {
                     //Es correcto
 
-                }else{
+                } else {
                     //Es false
                 }
                 screen_menu_button_tracing.setVisibility(View.VISIBLE);
-                positionSelect=index;
+                positionSelect = index;
             }
 
         });
@@ -111,7 +105,7 @@ public class ScreenTest extends ScreensBase implements Runnable{
             @Override
             public void onClick(View v) {
                 int index = screen_test_RadioGroup_items.getCheckedRadioButtonId();
-                for(int con=0;con<radioButtons.size();con++){
+                for (int con = 0; con < radioButtons.size(); con++) {
                     radioButtons.get(con).setEnabled(false);
                 }
                 if (positionSelect == -1) {
@@ -128,42 +122,79 @@ public class ScreenTest extends ScreensBase implements Runnable{
                     Toast.makeText(getApplicationContext(), getString(R.string.FAIL), Toast.LENGTH_SHORT).show();
                     radioButtons.get(positionSelect).setBackgroundColor(Color.RED);
                     radioButtons.get(dataNow.getTests().get(0).getSolutionPosition()).setBackgroundColor(Color.GREEN);
-                    showHtml(dataNow.getTest(0).getHelp(),dataNow.getTest(0).getTypeHelp());
+                    showHtml(dataNow.getTest(0).getChoices().get(dataNow.getTests().get(0).getSolutionPosition()));
                 }
 
             }
         });
+
+
+        //PRUEBA
+
+        GetTest getTest=new GetTest();
+        getTest.execute("");
+
+
+    }
+    /*
+    private void testShow(){
+        screen_test_TextView_question.setText(dataNow.getTests().get(0).getWording());
+        radioButtons=new ArrayList<RadioButton>();
+        if(dataNow!=null && dataNow.getTests().get(0).getChoices()!=null){
+
+            for(int con=0;con<dataNow.getTests().get(0).getChoices().size();con++){
+                RadioButton radioButton=new RadioButton(this);
+                radioButton.setText(dataNow.getTests().get(0).getChoices().get(con).getAnswer());
+                radioButtons.add(radioButton);
+                screen_test_RadioGroup_items.addView(radioButton);
+            }
+        }
+    }
+    */
+
+    private void testShow(Test test){
+        if(test==null)return;
+        screen_test_TextView_question.setText(test.getWording());
+        radioButtons=new ArrayList<RadioButton>();
+        if(test.getChoices()!=null){
+            for(int con=0;con<test.getChoices().size();con++){
+                RadioButton radioButton=new RadioButton(this);
+                radioButton.setText(test.getChoices().get(con).getAnswer());
+                radioButtons.add(radioButton);
+                screen_test_RadioGroup_items.addView(radioButton);
+            }
+        }
     }
 
-    private void showHtml(String help, int typeHelp){
+    private void showHtml(Choice choice){
 
-        if(help==null){
+        if(choice==null){
             return;
         }
         Uri uri;
-        switch (typeHelp){
-            case Test.HTML_HELP:
+        switch (choice.getResourceTypeInt()){
+            case Choice.HTML_HELP:
                 WebView web=new WebView(this);
-                web.loadData(help,"text/html",null);
+                web.loadData(choice.getAdvise(),"text/html",null);
                 web.setBackgroundColor(Color.TRANSPARENT);
                 web.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
                 screen_test_LinearLayout.addView(web);
                 break;
-            case Test.URL_HELP:
-                uri= Uri.parse(help);
+            case Choice.URL_HELP:
+                uri= Uri.parse(choice.getAdvise());
                 Intent intent=new Intent(Intent.ACTION_VIEW,uri);
                 startActivity(intent);
                 break;
-            case Test.AUDIO_HELP:
-                uri= Uri.parse(help);
+            case Choice.AUDIO_HELP:
+                uri= Uri.parse(choice.getAdvise());
                 audioPlayer=new AudioPlayer(screen_test_LinearLayout,this);
                 try {
                     audioPlayer.setAudioUri(uri);
                 } catch (IOException e) {
                 }
                 break;
-            case Test.VIDEO_HELP:
-                uri= Uri.parse(help);
+            case Choice.VIDEO_HELP:
+                uri= Uri.parse(choice.getAdvise());
                 VideoView videoView=new VideoView(this);
                 ViewGroup.LayoutParams params=new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -211,4 +242,46 @@ public class ScreenTest extends ScreensBase implements Runnable{
         //Ejecutar al final de la ejecución de la musica.
 
     }
+
+    private class GetTest extends AsyncTask<String, Void, Test> {
+
+        @Override
+        protected Test doInBackground(String... params) {
+            Test test=null;
+            int count = params.length;
+            long totalSize = 0;
+            RestClientTest restClientTest=new RestClientTest();
+            try {
+                test=restClientTest.getTest(1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return test;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected void onPostExecute(Test test) {
+            if(test==null)return;
+            testShow(test);
+            dataNow.addTests(test);
+        }
+
+        @Override
+        protected void onCancelled() {
+
+        }
+    }
+
+
+
 }
