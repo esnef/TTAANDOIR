@@ -30,6 +30,7 @@ import eus.ehu.intel.tta.tta.AudioPlayer;
 import eus.ehu.intel.tta.tta.Communications.RestClient;
 import eus.ehu.intel.tta.tta.Communications.RestClientTest;
 import eus.ehu.intel.tta.tta.DataType.Choice;
+import eus.ehu.intel.tta.tta.DataType.Status;
 import eus.ehu.intel.tta.tta.DataType.Test;
 import eus.ehu.intel.tta.tta.R;
 
@@ -58,6 +59,7 @@ public class ScreenTest extends ScreensBase implements Runnable{
         items.add("prueba2");
         items.add("prueba3");
         items.add("prueba4");
+
 
         //Test test=new Test(items,items.get(0),"PREGUNTA","<html><body><h1>gfigisagigdspfgagai</h1></body></html>",Test.HTML_HELP);
         //Test test=new Test(items,items.get(0),"PREGUNTA","http://www.google.es",Test.URL_HELP);
@@ -122,7 +124,7 @@ public class ScreenTest extends ScreensBase implements Runnable{
                     Toast.makeText(getApplicationContext(), getString(R.string.FAIL), Toast.LENGTH_SHORT).show();
                     radioButtons.get(positionSelect).setBackgroundColor(Color.RED);
                     radioButtons.get(dataNow.getTests().get(0).getSolutionPosition()).setBackgroundColor(Color.GREEN);
-                    showHtml(dataNow.getTest(0).getChoices().get(dataNow.getTests().get(0).getSolutionPosition()));
+                    showHtml(dataNow.getTest(0).getChoices().get(positionSelect));
                 }
 
             }
@@ -167,12 +169,13 @@ public class ScreenTest extends ScreensBase implements Runnable{
     }
 
     private void showHtml(Choice choice){
+        Gson gson=new Gson();
 
         if(choice==null){
             return;
         }
         Uri uri;
-        switch (choice.getResourceTypeInt()){
+        switch (Choice.getResourceTypeInt(choice)){
             case Choice.HTML_HELP:
                 WebView web=new WebView(this);
                 web.loadData(choice.getAdvise(),"text/html",null);
@@ -272,10 +275,50 @@ public class ScreenTest extends ScreensBase implements Runnable{
         @Override
         protected void onPostExecute(Test test) {
             if(test==null)return;
-            testShow(test);
             dataNow.addTests(test);
+            testShow(test);
+
         }
 
+        @Override
+        protected void onCancelled() {
+
+        }
+    }
+
+
+    private class GetStatus extends AsyncTask<String, Void, Status> {
+
+        @Override
+        protected eus.ehu.intel.tta.tta.DataType.Status doInBackground(String... params) {
+            eus.ehu.intel.tta.tta.DataType.Status status=null;
+            int count = params.length;
+            long totalSize = 0;
+            RestClientTest restClientTest=new RestClientTest();
+            try {
+                status=restClientTest.getStatus(params[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return status;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+    /*
+        @Override
+        protected void onPostExecute(Status status) {
+
+
+        }
+*/
         @Override
         protected void onCancelled() {
 

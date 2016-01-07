@@ -3,9 +3,11 @@ package eus.ehu.intel.tta.tta.Communications;
 import android.os.AsyncTask;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 
+import eus.ehu.intel.tta.tta.DataType.Status;
 import eus.ehu.intel.tta.tta.DataType.Test;
 
 /**
@@ -24,9 +26,7 @@ public class RestClientTest {
     private static final String APPLICATION_POST_CHOICE="postChoice";
     private static OnRestClientListener onRestClientListener=null;
 
-    public void getStatus(String dni){
 
-    }
 
     public Test getTest(String id) throws IOException {
         RestClient restClient=new RestClient(PATH_SERVER);
@@ -56,6 +56,19 @@ public class RestClientTest {
         }
         return null;
 
+    }
+
+
+    public Status getStatus(String dni) throws IOException {
+        if(dni==null)return null;
+        RestClient restClient=new RestClient(PATH_SERVER);
+        String resultJSON=restClient.getString(APPLICATION_GET_STATUS+dni);
+        if(resultJSON!=null) {
+            Gson gson = new Gson();
+            Status status = gson.fromJson(resultJSON, Status.class);
+            return status;
+        }
+        return null;
     }
 
 

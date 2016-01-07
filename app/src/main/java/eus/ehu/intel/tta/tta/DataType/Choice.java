@@ -23,8 +23,8 @@ public class Choice implements Serializable {
     private String advise;
     private String answer;
     private Boolean correct;
-    @SerializedName("ResourceType")
-    private ResourceType resourceType;
+    @SerializedName("resourceType")
+    public ResourceType resourceType;
 
 
     public ResourceType getResourceType() {
@@ -83,6 +83,42 @@ public class Choice implements Serializable {
         }else if(getResourceType().getDescription().equals(VIDEO_HELP_STRING)){
             positionHelp=AUDIO_HELP;
         }else if(getResourceType().getDescription().equals(AUDIO_HELP_STRING)){
+            positionHelp=VIDEO_HELP;
+        }
+        switch (positionHelp){
+            case Choice.HTML_HELP:
+
+                break;
+            case Choice.URL_HELP:
+
+                break;
+            case Choice.AUDIO_HELP:
+
+                break;
+            case Choice.VIDEO_HELP:
+
+                break;
+            default:
+                break;
+        }
+        return positionHelp;
+    }
+
+    public static int  getResourceTypeInt(Choice choice){
+
+        int positionHelp=-1;
+        if(choice==null)return positionHelp;
+        //if(getResourceType()==null)return positionHelp;
+        if(choice.getResourceType().getDescription().equals(HTML_HELP_STRING)){
+            positionHelp=HTML_HELP;
+            if(choice.getAdvise().compareToIgnoreCase("http://")>=0){
+                positionHelp=URL_HELP;
+            }
+        }else if(choice.getResourceType().getDescription().equals(URL_HELP_STRING)){
+            positionHelp=URL_HELP;
+        }else if(choice.getResourceType().getDescription().equals(VIDEO_HELP_STRING)){
+            positionHelp=AUDIO_HELP;
+        }else if(choice.getResourceType().getDescription().equals(AUDIO_HELP_STRING)){
             positionHelp=VIDEO_HELP;
         }
         switch (positionHelp){
